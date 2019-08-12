@@ -25,7 +25,7 @@
 {{- end }}
 
 2. Connect to your Gitea ssh port:
-
+{{- if .Values.service.ssh }}
 {{- if contains "NodePort" .Values.service.ssh.serviceType }}
 
   export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
@@ -43,4 +43,5 @@
   export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ template "fullname" . }}" -o jsonpath="{.items[0].metadata.name}")
   echo http://127.0.0.1:8080/
   kubectl port-forward $POD_NAME 8022:22
+{{- end }}
 {{- end }}

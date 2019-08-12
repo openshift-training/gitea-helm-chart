@@ -16,11 +16,11 @@ data:
     ; see https://docs.gitea.io/en-us/config-cheat-sheet/ for additional documentation.
 
     ; App name that shows in every page title
-    APP_NAME = Gitea: Git with a cup of tea
+    APP_NAME = kubernetes-training.io
     ; Change it if you run locally
     RUN_USER = git
     ; Either "dev", "prod" or "test", default is "dev"
-    RUN_MODE = dev
+    RUN_MODE = prod
 
     [repository]
     ROOT =
@@ -30,7 +30,7 @@ data:
     ; Force every new repository to be private
     FORCE_PRIVATE = false
     ; Default privacy setting when creating a new repository, allowed values: last, private, public. Default is last which means the last setting used.
-    DEFAULT_PRIVATE = last
+    DEFAULT_PRIVATE = private
     ; Global limit of repositories per user, applied at creation time. -1 means no limit
     MAX_CREATION_LIMIT = -1
     ; Mirror sync queue length, increase if mirror syncing starts hanging
@@ -172,6 +172,7 @@ data:
     ; Username to use for the builtin SSH server. If blank, then it is the value of RUN_USER.
     BUILTIN_SSH_SERVER_USER =
     ; Domain name to be exposed in clone URL
+    {{- if .Values.service.ssh }}
     {{- if .Values.service.ssh.externalHost  }}
     SSH_DOMAIN = {{ .Values.service.ssh.externalHost  }}
     {{- else }}
@@ -210,6 +211,7 @@ data:
     SSH_BACKUP_AUTHORIZED_KEYS = true
     ; Enable exposure of SSH clone URL to anonymous visitors, default is false
     SSH_EXPOSE_ANONYMOUS = false
+    {{- end }}
     ; Indicate whether to check minimum key size with corresponding type
     MINIMUM_KEY_SIZE_CHECK = false
     ; Disable CDN even in "prod" mode
@@ -418,7 +420,7 @@ data:
     PAGING_NUM = 10
 
     [mailer]
-    ENABLED = false
+    ENABLED = true
     ; Buffer length of channel, keep it as it is if you don't know what it is.
     SEND_BUFFER_LEN = 100
     ; Name displayed in mail title

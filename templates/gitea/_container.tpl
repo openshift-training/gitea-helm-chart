@@ -12,8 +12,6 @@ Create helm partial for gitea server
         name: {{ template "db.fullname" . }}
         key: dbPassword
   ports:
-  - name: ssh
-    containerPort: {{ .Values.service.ssh.port  }}
   - name: http
     containerPort: {{ .Values.service.http.port  }}
   livenessProbe:

@@ -3,9 +3,9 @@
 ##
 
 images:
-  gitea: "gitea/gitea:1.6.1"
+  gitea: "gitea/gitea:1.8.3"
   postgres: "postgres:11"
-  memcached: "memcached:1.5.6-alpine"
+  memcached: "memcached:1.5.16-alpine"
   imagePullPolicy: Always
   ## Specify imagePullSecrets
   ## ref: https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod
@@ -20,19 +20,19 @@ memcached:
 
 ## ingress settings - Optional
 ingress:
-  enabled: false
+  enabled: true
   ## annotations used by the ingress - ex for k8s nginx ingress controller:
-  #ingress_annotations:
-  #  kubernetes.io/ingress.class: nginx
-  #  nginx.ingress.kubernetes.io/proxy-body-size: "0"
-  #  nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-  #  nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+  ingress_annotations:
+    certmanager.k8s.io/cluster-issuer: letsencrypt-production
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
 
   ##tls support for the ingress
-  #tls:
-  #  - secretName: <TLS_SECRET>
-  #    hosts:
-  #      - 'git.example.com'
+  tls:
+  - secretName: git-tls
+    hosts:
+      - git.devops.kubernetes-training.io
 
 ## chart defaults to using an ingress for http, but change to LoadBalancer if using you cluster supports it
 service:
@@ -41,11 +41,11 @@ service:
     port: 3000
     #nodePort: 30280
     # sometimes if is necesary to access through an external port i.e. http(s)://<dns-name>:<external-port>
-    externalPort: 8280
-    externalHost: git.example.com
-  ssh:
-    serviceType: ClusterIP
-    port: 22
+    # externalPort: 443
+    externalHost: git.devops.kubernetes-training.io
+  # ssh:
+  #  serviceType: ClusterIP
+  #  port: 22
     #nodePort: 30222
     ## if serving on a different external port used for determining the ssh url in the gui
     #externalPort: 8022
@@ -60,14 +60,14 @@ resources:
       memory: 500Mi
       cpu: 1000m
     limits:
-      memory: 2Gi
+      memory: 4Gi
       cpu: 1
   postgres:
     requests:
       memory: 200Mi
       cpu: 200m
     limits:
-      memory: 2Gi
+      memory: 4Gi
       cpu: 1
   memcached:
     requests:
@@ -81,13 +81,13 @@ resources:
 ## ref:
 ##
 persistence:
-  enabled: false
+  enabled: true
   #existingGiteaClaim: gitea-gitea
   #existingPostgresClaim: gitea-postgres
   giteaSize: 10Gi
   postgresSize: 5Gi
-  #storageClass: glusterfs
-  accessMode: ReadWriteMany
+  storageClass: openebs-jiva-default
+  accessMode: ReadWriteOnce
 ## addtional annotations for hte pvcs  uncommenting below will prevent helm from deleting the pvc when hte chart is deleted
 #  annotations:
 #    "helm.sh/resource-policy": keep
